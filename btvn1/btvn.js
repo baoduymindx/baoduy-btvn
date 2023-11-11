@@ -6,7 +6,7 @@ console.log("i have 15 grapes,18 oranges", mang);
 
 
 var Dog = {
-    "Name ": "Ngáo",
+    Name: "Ngáo",
     "legs": " 04",
     "friends": "alsaka,bitpull"
 
