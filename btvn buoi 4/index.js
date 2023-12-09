@@ -39,15 +39,15 @@ function loadDanhSachSanPham() {
         let priceItem = data[i].price;
         let imageItem = data[i].img;
         content.innerHTML += `
-    <div class="content-item">
-            <img src="${imageItem}" alt="">
-            <h3> ${nameItem}...</h3>
-            <p>${priceItem}$</p>
-            <button class="btn" id=${data[i].id}>
-                <i class="fa-solid fa-cart-shopping"></i>
-                Add to cart</button>
-        </div>
-    `;
+      <div class="content-item">
+              <img src="${imageItem}" alt="">
+              <h3> ${nameItem}...</h3>
+              <p>${priceItem}$</p>
+              <button class="btn" id=${data[i].id}>
+                  <i class="fa-solid fa-cart-shopping"></i>
+                  Add to cart</button>
+          </div>
+      `;
     }
 
     let btnAddItems = document.querySelectorAll(".btn");
@@ -55,12 +55,17 @@ function loadDanhSachSanPham() {
         let btnItem = btnAddItems[i];
         btnItem.addEventListener("click", function () {
             let idItem = btnItem.id;
+            // bien data la file data.js
             for (let i = 0; i < data.length; i++) {
+                // KIme tra cai id cua nguoi dung click vao va id cua data co trung hay khong
+
                 let idData = data[i].id;
                 if (idItem == idData) {
+                    // Neu trung thi dua vao gio hang
                     cartArray.push(data[i]);
                     quantity.innerText = cartArray.length;
                     localStorage.setItem("cart", JSON.stringify(cartArray));
+                    loadCart();
                 }
             }
         });
@@ -75,6 +80,84 @@ function loadQuantity() {
         quantity.innerText = 0;
     }
 }
+
+function checkLocalStorageCart() {
+    if (localStorage.getItem("cart")) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function loadCart() {
+    // khi mà hàm này được gọi
+    // lấy thằng element cart-product-wrapper = "cart-wrapper"
+    let cartWrapper = document.querySelector(".cart-product-wrapper");
+    let isChecked = checkLocalStorageCart();
+    let cartArray = JSON.parse(localStorage.getItem("cart"));
+    let html = "";
+    // Nó sẽ kiểm tra trên localstorage có key cart hay không ?
+    if (isChecked) {
+        // Nếu có
+        // Thì nó sẽ ...
+        // cart-wrapper.innerHTML = `ul danh sach`
+        html += `<ul class="cart-products">`;
+        for (let i = 0; i < cartArray.length; i++) {
+            let image = cartArray[i].img;
+            let name = cartArray[i].name;
+            let price = cartArray[i].price;
+            let id = cartArray[i].id
+            html += `
+            <li class="product-item">
+            <img src=${image} alt="sanpham1">
+            <div class="product-body">
+                <p class="product-name">${name}</p>
+                <div class="productQuantityPrice">
+                    <p class="price">${price}$</p>
+                    <p class="quantityProductCart">x 1</p>
+                </div>
+            </div>
+            <i onclick="deleteCart(${id})"class="fa-solid fa-trash deleteCart"></i>
+        </li>
+        `;
+        }
+        html += `</ul>
+  <p class="totalprice">
+      Tổng tiền : 1000$
+  </p>
+  <button class="pay">
+      Thanh toán
+  </button> `;
+        cartWrapper.innerHTML = html;
+    } else {
+        // Không có
+        // Thì nó sẽ
+        // Cart-wrapper.innerHTML =<img />
+        html += `
+      <img class="no-product-image" src="https://www.tharagold.in/assets/img/no-product-found.png"/>
+      `;
+        cartWrapper.innerHTML = html;
+    }
+}
+
+
+// Ham chay
 loadQuantity();
 loadDanhSachSanPham();
 checkLogin();
+loadCart();
+
+function deleteCart(id) {
+    let newCart = [];
+    let oldCart = JSON.parse(localStorage.getItem("cart"));
+    for (let i = 0; i < oldCart.length; i++) {
+        if (id !== oldCart[i].id) {
+            newCart.push(oldCart[i]);
+        }
+    }
+    console.log(newCart);
+    localStorage.setItem("cart", JSON.stringify(newCart));
+    loadCart();
+    loadQuantity();
+
+}
